@@ -8,10 +8,17 @@ let users = [];
 
 app.post("/create", (req,res)=>{
     let body = req.body;
-    console.log(body);
-
     users.push(body);
+    console.log("User Saved SuccessFULLY");
+
 });
+
+app.delete("/delete/:id" ,(req,res)=>{
+    let { id} = req.params;
+    let userData = users.filter((val)=> val.id !== id)
+    users = userData;
+    res.send("USER Deleted Successfully!!");
+})
 
 app.get("/", (req,res)=>{
     res.send(users);
