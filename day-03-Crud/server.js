@@ -20,6 +20,16 @@ app.delete("/delete/:id" ,(req,res)=>{
     res.send("USER Deleted Successfully!!");
 })
 
+app.patch("/update/:id", (req,res)=> {
+    let {id} = req.params;
+    let {name} = req.body;
+
+    let updatedUser = users.map((val)=>
+        val.id === id ? {...val , name} : val
+    );
+    res.send(updatedUser);
+});
+
 app.get("/", (req,res)=>{
     res.send(users);
 });
