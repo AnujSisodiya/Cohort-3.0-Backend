@@ -26,6 +26,11 @@ let express = require("express")
 
 let app = express()
 
+//Express.Json is the middleware which is used to Accept the data from frontend
+
+app.use(express.json());
+
+
 app.get("/", (req,res)=>{
     res.send("This is Home Page")
 })
@@ -273,6 +278,11 @@ app.get("/products", (req, res)=>{
     }
   }
 ])
+})
+
+app.post("create", (req,res)=>{
+    console.log(req.body);
+    res.send("Data Recieved")
 })
 
 app.listen(3000, ()=>{
