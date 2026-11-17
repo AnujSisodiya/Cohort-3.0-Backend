@@ -1,5 +1,5 @@
 const NotesModel = require("../models/notes.models");
-
+//Create
 const createNotesController = async (req , res ) =>{
     try {
         let { title , description} =  req.body;
@@ -16,6 +16,7 @@ const createNotesController = async (req , res ) =>{
         console.log("Error in Creation",error);
     }
 }
+//Read
 const getAllNotesController =  async (req , res)=>{
     try {
         const allNotes = await NotesModel.find();
@@ -28,4 +29,53 @@ const getAllNotesController =  async (req , res)=>{
         console.log("Error while fetching notes", error)
     }
 }
-module.exports = {createNotesController , getAllNotesController}
+//Read One
+const getNoteByIdController =  async (req , res)=>{
+   try {
+    let noteId = req.params.id;
+    
+   let note = await NotesModel.findById(noteId);
+   res.status(200).json({
+    message:"Note fetched Successfully",
+    data:note
+   })
+
+   } catch (error) {
+    console.log("Error in fetching the note", error)
+   }
+}
+//Update Vai Put
+const updateNoteByIdController=  async (req,res)=>{
+    try {
+        let noteId = req.params.id;
+        let body = req.body;
+        
+        let updatedNote = await NotesModel.findByIdAndUpdate(noteId , body , {new:true});
+
+        return res.status(200).json({
+            message:"Note Updated Succesfully",
+            data:updatedNote,
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:"Internal Server Error",
+        })
+    }
+}
+//Delete one by Id
+const deleteNoteByIdController = async (req,res) =>{
+    try {
+        let noteId = req.params.id;
+        
+        await NotesModel.findByIdAndDelete(noteId);
+
+        return res.status(200).json({
+            message:"Note Deleted Successfully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+}
+module.exports = {createNotesController , getAllNotesController,getNoteByIdController,updateNoteByIdController,deleteNoteByIdController}
