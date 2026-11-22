@@ -7,14 +7,17 @@ const App = () => {
  const {register, handleSubmit} = useForm();
 
  const submitHandler = async (data)=>{
-   
- const formData = new formData();
+  console.log(data);
+ const formData = new FormData();
 
  formData.append("name", data.name);
- formData.append("email", data.name);
- formData.append("images", data.images[0]);
+ formData.append("email", data.email);
+ 
+ for( let i=0; i<data.images.length; i++){
+  formData.append("images", data.images[i]);
+ }
 
- await axios.post("http://localhost:5173/users/create",formData);
+ await axios.post("http://localhost:3000/users/create",formData);
  
  }
   return (
