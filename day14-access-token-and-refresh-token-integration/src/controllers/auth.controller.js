@@ -1,6 +1,6 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcryptjs"
-import {generateTokens , verifyAccessToken} from "../utils/auth.js";
+import {generateTokens , verifyAccessToken, verifyRefreshToken} from "../utils/auth.js";
 
 const registerController = async (req, res)=>{
     const {name, email , password} = req.body;
@@ -67,5 +67,42 @@ const loginUserController = async (req,res)=>{
         })
     }
 }
+const refreshTokenController = async (req,res) =>{
+    const refreshToken = req.cookies.refreshToken;
 
-export {registerController,loginUserController}
+    if(!refreshToken){
+        return res.status(200).json({
+            message: "Unauthorized, refresh token not found"
+        })
+    }
+    try {
+        const decoded =  verifyRefreshToken(refreshToken);
+        const user = await userModel.findById(decoded.id);
+
+        if(refreshToken !== user.refreshToken){
+            user.refreshToken = null;
+            await user.save();
+
+            return res.status(401).json({
+                message: "Unauthorized, refresh token mismatch"
+            })
+        }
+
+        const {accessToken , refreshToken: newRefreshToken} = generateTokens({userId: user._id})
+
+        res.cookie("refreshToken", newRefreshToken , {httpOnly: true})
+
+        user.refreshToken = newRefreshToken;
+        await user.save();
+
+        res.status(200).json({
+            message: "Token refreshed Successfully",
+            accessToken
+        })
+    } catch (error) {
+        return res.status(401).json({
+            message: "Unauthorized, Invalid or expired refresh token",
+        })
+    }
+}
+export {registerController,loginUserController, refreshTokenController}
